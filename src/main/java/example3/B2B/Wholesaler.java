@@ -1,5 +1,7 @@
 package example3.B2B;
 
+import org.apache.activemq.ActiveMQConnection;
+
 import java.io.*;
 import java.util.*;
 
@@ -15,13 +17,13 @@ public class Wholesaler implements javax.jms.MessageListener {
 	private TopicSubscriber subscriber = null;
 	private Topic hotDealsTopic = null;
 	private TemporaryTopic buyOrdersTopic = null;
-	
-	private static final String INITIAL_CONTEXT_FACTORY = "weblogic.jndi.WLInitialContextFactory";	
-	private static final String DEFAULT_URL = "t3://localhost:7001";
-	private static final String DEFAULT_USER = "weblogic";
-	private static final String DEFAULT_PASSWORD = "weblogic11";
-	private static final String HOTDEAL_TCF_NAME = "ConnectionFactoryTopicHotDeals";
-	private static final String HOTDEAL_TOPIC_NAME = "HotDeals";
+
+	private static final String INITIAL_CONTEXT_FACTORY = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
+	private static final String DEFAULT_URL = ActiveMQConnection.DEFAULT_BROKER_URL;
+	private static final String DEFAULT_USER = "admin";
+	private static final String DEFAULT_PASSWORD = "admin";
+	private static final String HOTDEAL_TCF_NAME = "TopicConnectionFactory";
+	private static final String HOTDEAL_TOPIC_NAME = "dynamicTopics/HotDeals";
 
 	public Wholesaler() {
 		try {
@@ -29,12 +31,12 @@ public class Wholesaler implements javax.jms.MessageListener {
 			env.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
 			env.put(Context.PROVIDER_URL, DEFAULT_URL);
 			env.put(Context.SECURITY_PRINCIPAL, DEFAULT_USER);
-			env.put(Context.SECURITY_CREDENTIALS, DEFAULT_PASSWORD);			
+			env.put(Context.SECURITY_CREDENTIALS, DEFAULT_PASSWORD);
 			InitialContext jndi = new InitialContext(env);
-						
+
 			TopicConnectionFactory factory = (TopicConnectionFactory) jndi.lookup(HOTDEAL_TCF_NAME);
 			connect = factory.createTopicConnection();
-			
+
 			pubSession = connect.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
 			subSession = connect.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
 			hotDealsTopic = (Topic) jndi.lookup(HOTDEAL_TOPIC_NAME);
@@ -87,7 +89,7 @@ public class Wholesaler implements javax.jms.MessageListener {
 		System.exit(0);
 	}
 
-	public static void main(String argv[]) {		
+	public static void main(String argv[]) {
 		Wholesaler wholesaler = new Wholesaler();
 		try {
 			// Read all standard input and send it as a message.

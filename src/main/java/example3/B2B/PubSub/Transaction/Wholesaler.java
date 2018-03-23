@@ -1,5 +1,7 @@
 package example3.B2B.PubSub.Transaction;
 
+import org.apache.activemq.ActiveMQConnection;
+
 import java.io.*;
 import java.util.*;
 
@@ -16,12 +18,12 @@ public class Wholesaler implements javax.jms.MessageListener {
 	private Topic hotDealsTopic = null;
 	private TemporaryTopic buyOrdersTopic = null;
 
-	private static final String INITIAL_CONTEXT_FACTORY = "weblogic.jndi.WLInitialContextFactory";
-	private static final String DEFAULT_URL = "t3://localhost:7001";
-	private static final String DEFAULT_USER = "weblogic";
-	private static final String DEFAULT_PASSWORD = "weblogic11";
-	private static final String HOTDEAL_TCF_NAME = "ConnectionFactoryTopicHotDeals";
-	private static final String HOTDEAL_TOPIC_NAME = "HotDeals";
+	private static final String INITIAL_CONTEXT_FACTORY = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
+	private static final String DEFAULT_URL = ActiveMQConnection.DEFAULT_BROKER_URL;
+	private static final String DEFAULT_USER = "admin";
+	private static final String DEFAULT_PASSWORD = "admin";
+	private static final String HOTDEAL_TCF_NAME = "TopicConnectionFactory";
+	private static final String HOTDEAL_TOPIC_NAME = "dynamicTopics/HotDeals";
 
 	public Wholesaler() {
 		try {
@@ -56,7 +58,7 @@ public class Wholesaler implements javax.jms.MessageListener {
 	}
 
 	private void publishPriceQuotes(String dealDesc, String username,
-			String itemDesc, float oldPrice, float newPrice) {
+									String itemDesc, float oldPrice, float newPrice) {
 		try {
 			StreamMessage message = pubSession.createStreamMessage();
 			message.writeString(dealDesc);

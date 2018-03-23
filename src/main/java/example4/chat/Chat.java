@@ -1,5 +1,7 @@
 package example4.chat;
 
+import org.apache.activemq.ActiveMQConnection;
+
 import javax.jms.*;
 import javax.naming.*;
 
@@ -13,24 +15,24 @@ public class Chat implements javax.jms.MessageListener {
 	private TopicPublisher publisher;
 	private TopicConnection connection;
 	private String username;
-	
-	public final static String JNDI_FACTORY = "weblogic.jndi.WLInitialContextFactory";	
-	public final static String JMS_FACTORY = "jndi.ChatConnectionFactory";
-	public final static String TOPIC = "jndi.ChatTopic";
-	private static final String DEFAULT_URL = "t3://localhost:7001";
-	private static final String DEFAULT_USER = "weblogic";
-	private static final String DEFAULT_PASSWORD = "weblogic11";
+
+	public final static String JNDI_FACTORY = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
+	private static final String DEFAULT_URL = ActiveMQConnection.DEFAULT_BROKER_URL;
+	private static final String DEFAULT_USER = "admin";
+	private static final String DEFAULT_PASSWORD = "admin";
+
+	public final static String JMS_FACTORY = "TopicConnectionFactory";
+	public final static String TOPIC = "dynamicTopics/topic";
 
 	/* Constructor. Establish JMS publisher and subscriber */
 	public Chat() throws Exception {
 		// Obtain a JNDI connection
-		
+
 		Hashtable env = new Hashtable();
 		env.put(Context.INITIAL_CONTEXT_FACTORY, JNDI_FACTORY);
-		env.put(Context.PROVIDER_URL, DEFAULT_URL);		
+		env.put(Context.PROVIDER_URL, DEFAULT_URL);
 		env.put(Context.SECURITY_PRINCIPAL, DEFAULT_USER);
 		env.put(Context.SECURITY_CREDENTIALS, DEFAULT_PASSWORD);
-
 		InitialContext jndi = new InitialContext(env);
 
 		// Look up a JMS connection factory
@@ -54,7 +56,7 @@ public class Chat implements javax.jms.MessageListener {
 		subscriber.setMessageListener(this);
 
 		// Intialize the Chat application
-		set(connection, pubSession, subSession, publisher, username);
+		set(connection, pubSession, subSession, publisher, DEFAULT_USER);
 
 		// Start the JMS connection; allows messages to be delivered
 		connection.start();

@@ -1,5 +1,7 @@
 package example3.B2B.PubSub.Transaction;
 
+import org.apache.activemq.ActiveMQConnection;
+
 import java.io.BufferedReader;
 import java.util.*;
 
@@ -12,12 +14,12 @@ public class Retailer implements MessageListener {
 	private TopicPublisher publisher = null;
 	private Topic hotDealsTopic = null;
 
-	private static final String INITIAL_CONTEXT_FACTORY = "weblogic.jndi.WLInitialContextFactory";
-	private static final String DEFAULT_URL = "t3://localhost:7001";
-	private static final String DEFAULT_USER = "weblogic";
-	private static final String DEFAULT_PASSWORD = "weblogic11";
-	private static final String HOTDEAL_TCF_NAME = "ConnectionFactoryTopicHotDeals";
-	private static final String HOTDEAL_TOPIC_NAME = "HotDeals";
+	private static final String INITIAL_CONTEXT_FACTORY = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
+	private static final String DEFAULT_URL = ActiveMQConnection.DEFAULT_BROKER_URL;
+	private static final String DEFAULT_USER = "admin";
+	private static final String DEFAULT_PASSWORD = "admin";
+	private static final String HOTDEAL_TCF_NAME = "TopicConnectionFactory";
+	private static final String HOTDEAL_TOPIC_NAME = "dynamicTopics/HotDeals";
 
 	private boolean inRollback;
 	private boolean rollbackOnly;
